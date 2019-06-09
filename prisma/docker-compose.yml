@@ -15,7 +15,7 @@ services:
             connector: postgres
             host: ec2-54-225-106-93.compute-1.amazonaws.com
             database: dadtrs54q7uv7
-            schema: public
+            # schema: public
             user: clpqtrowclbyjg
             password: b56f38eb41797a4ec31c1c9fd0787724d900712bcc56d811139291ea191e2965
             ssl: true
