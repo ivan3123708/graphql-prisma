@@ -14,18 +14,40 @@ const Query = {
       published: false
     }
   },
-  users(parent, args, { db }, info) {
-    if (!args.name) return db.users;
+  users(parent, args, { prisma }, info) {
+    const _args = {};
 
-    return db.users.filter((user) => user.name.toLowerCase().includes(args.name.toLowerCase()));
-  },
-  posts(parent, args, { db }, info) {
-    if (args.published === undefined) return db.posts;
+    if (args.query) {
+      _args.where = {
+        OR: [{
+          name_contains: args.query
+        },
+        {
+          email_contains: args.query
+        }]
+      }
+    }
 
-    return db.posts.filter((post) => post.published === args.published);
+    return prisma.query.users(_args, info);
   },
-  comments(parent, args, { db }, info) {
-    return db.comments;
+  posts(parent, args, { prisma }, info) {
+    const _args = {};
+
+    if (args.query) {
+      _args.where = {
+        OR: [{
+          title_contains: args.query
+        },
+        {
+          body_contains: args.query
+        }]
+      }
+    }
+
+    return prisma.query.posts(_args, info);
+  },
+  comments(parent, args, { prisma }, info) {
+    return prisma.query.comments(null, info);
   }
 };
 
