@@ -13,4 +13,4 @@ const getUserId = (req) => {
   return decoded.userId;
 };
 
-export { getUserId as default }; 
+export { getUserId as default };
