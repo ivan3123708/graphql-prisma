@@ -1,18 +1,36 @@
+import getUserId from '../utils/getUserId';
+
 const Query = {
-  me() {
-    return {
-      id: '123456',
-      name: 'Mike',
-      email: 'mike@mail,com',
-      age: 27
-    }
+  me(parent, args, { req, prisma }, info) {
+    const userId = getUserId(req);
+
+    return prisma.query.user({
+      where: {
+        id: userId
+      }
+    }, info);
   },
-  post() {
-    return {
-      id: '789456',
-      title: 'Hello World',
-      published: false
+  async post(parent, args, { req, prisma }, info) {
+    const userId = getUserId(req, false);
+
+    const posts = await prisma.query.posts({
+      where: {
+        id: args.id,
+        OR: [{
+          published: true
+        },{
+          author: {
+            id: userId
+          }
+        }]
+      }
+    }, info);
+
+    if (!posts.length) {
+      throw new Error('Post not found');
     }
+
+    return posts[0];
   },
   users(parent, args, { prisma }, info) {
     const _args = {};
@@ -30,18 +48,41 @@ const Query = {
 
     return prisma.query.users(_args, info);
   },
-  posts(parent, args, { prisma }, info) {
-    const _args = {};
+  myPosts(parent, args, { req, prisma }, info) {
+    const userId = getUserId(req);
+
+    const _args = {
+      where: {
+        author: {
+          id: userId
+        }
+      }
+    };
 
     if (args.query) {
-      _args.where = {
-        OR: [{
-          title_contains: args.query
-        },
-        {
-          body_contains: args.query
-        }]
+      _args.where.OR = [{
+        title_contains: args.query
+      }, {
+        body_contains: args.query
+      }];
+    }
+
+    return prisma.query.posts(_args, info);
+  },
+  posts(parent, args, { prisma }, info) {
+    const _args = {
+      where: {
+        published: true
       }
+    };
+
+    if (args.query) {
+      _args.where.OR = [{
+        title_contains: args.query
+      },
+      {
+        body_contains: args.query
+      }];
     }
 
     return prisma.query.posts(_args, info);
