@@ -33,7 +33,12 @@ const Query = {
     return posts[0];
   },
   users(parent, args, { prisma }, info) {
-    const _args = {};
+    const _args = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy
+    };
 
     if (args.query) {
       _args.where = {
@@ -52,6 +57,10 @@ const Query = {
     const userId = getUserId(req);
 
     const _args = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy,
       where: {
         author: {
           id: userId
@@ -71,6 +80,10 @@ const Query = {
   },
   posts(parent, args, { prisma }, info) {
     const _args = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy,
       where: {
         published: true
       }
@@ -88,7 +101,14 @@ const Query = {
     return prisma.query.posts(_args, info);
   },
   comments(parent, args, { prisma }, info) {
-    return prisma.query.comments(null, info);
+    const _args = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy
+    }
+
+    return prisma.query.comments(_args, info);
   }
 };
 
