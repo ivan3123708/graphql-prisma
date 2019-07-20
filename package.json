@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js --ext js,graphql --exec babel-node",
+    "start": "env-cmd -f ./config/prod.env node dist/index.js",
+    "heroku-postbuild": "babel src --out-dir dist --copy-files",
+    "start:dev": "env-cmd -f ./config/dev.env nodemon src/index.js --ext js,graphql --exec babel-node",
     "get-schema": "graphql get-schema -p prisma"
   },
   "author": "",
@@ -16,7 +18,9 @@
     "@babel/preset-env": "^7.1.6"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.4.4",
     "bcryptjs": "^2.4.3",
+    "env-cmd": "^9.0.3",
     "graphql-cli": "^3.0.11",
     "graphql-yoga": "^1.17.4",
     "jsonwebtoken": "^8.5.1",
